@@ -3,8 +3,13 @@ package com.sconto.pages;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.sconto.utils.PropertiesLoader;
+import io.cucumber.datatable.DataTable;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.bidi.log.Log;
 import org.openqa.selenium.support.FindBy;
+
+import java.util.List;
+import java.util.Map;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
@@ -41,6 +46,22 @@ public class LoginPage {
     @FindBy(css = ".titleHeadline")
     WebElement userNameTitle;
     public SelenideElement verifyName() {
+
         return $(userNameTitle).shouldHave(text(userName));
+    }
+
+    public LoginPage enterWrongData(DataTable table) {
+        List<Map<String, String>> dataTable = table.asMaps();
+        String email = dataTable.get(0).get("email");
+        String password = dataTable.get(0).get("password");
+        $(emailField).setValue(email);
+        $(passwordField).setValue(password);
+        return Selenide.page(LoginPage.class);
+    }
+
+    @FindBy(id = "loginEmail-error")
+    WebElement errorMEssage;
+    public SelenideElement verifyErrorMessageIsDisplayed() {
+        return $(errorMEssage).shouldHave(text("Benutzername nicht gefunden oder Passwort falsch."));
     }
 }
